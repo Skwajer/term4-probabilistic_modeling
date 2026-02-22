@@ -5,7 +5,7 @@ project(Unemployment_Simulation2026 VERSION 0.1 LANGUAGES CXX)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Quick)
+find_package(Qt6 REQUIRED COMPONENTS Quick QuickControls2)
 
 
 qt_add_executable(appUnemployment_Simulation2026
@@ -35,7 +35,7 @@ set_target_properties(appUnemployment_Simulation2026 PROPERTIES
 )
 
 target_link_libraries(appUnemployment_Simulation2026
-    PRIVATE Qt6::Quick
+    PRIVATE Qt6::Quick Qt6::QuickControls2
 )
 
 include(GNUInstallDirs)
