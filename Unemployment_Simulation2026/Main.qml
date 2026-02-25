@@ -27,7 +27,6 @@ ApplicationWindow {
         }
     }
 
-    // Кастомные цвета для разных состояний
     readonly property color successColor: "#8bc34a"
     readonly property color errorColor: "#e57373"
     readonly property color infoColor: "#6495ED"
@@ -141,7 +140,7 @@ ApplicationWindow {
 
             background: Rectangle {
                 color: "#2a1b3d"
-                radius: 10
+                radius: 14
                 border.color: "#bb86fc"
                 border.width: 1
             }
