@@ -53,6 +53,8 @@ public slots:
     void resetSimulation();
     QVector<int> findNeverInfected();
     QVector<int> findRecovered();
+    QVector<int> findRecoveredWithUnrecoveredNeighbors();
+    QVector<int> findNeverInfectedWithAllNeighborsInfected();
 
 private:
     Simulation m_simulation;

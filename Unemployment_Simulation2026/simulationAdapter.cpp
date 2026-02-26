@@ -133,3 +133,77 @@ QVector<int> simulationAdapter::findRecovered()
     return recovered;
 }
 
+QVector<int> simulationAdapter::findRecoveredWithUnrecoveredNeighbors()
+{
+    QVector<int> result;
+
+    for (int i = 0; i < m_simulation.getPersonCount(); i++)
+    {
+        Person* person = m_simulation.getPerson(i);
+
+        // Проверяем, что человек выздоровел
+        if (person->state != State::Recovered) continue;
+
+        // Проверяем всех его знакомых
+        bool hasUnrecoveredNeighbor = false;
+        for (int contactId : person->contacts)
+        {
+            Person* contact = m_simulation.getPerson(contactId);
+            if (contact->state != State::Recovered)
+            {
+                hasUnrecoveredNeighbor = true;
+                break;
+            }
+        }
+
+        if (hasUnrecoveredNeighbor)
+        {
+            result.push_back(person->id);
+        }
+    }
+
+    qDebug() << "Recovered with unhealthy neighbors found:" << result.size();
+    return result;
+}
+
+QVector<int> simulationAdapter::findNeverInfectedWithAllNeighborsInfected()
+{
+    QVector<int> result;
+
+    for (int i = 0; i < m_simulation.getPersonCount(); i++)
+    {
+        Person* person = m_simulation.getPerson(i);
+
+        // Проверяем, что человек никогда не болел (все еще здоров)
+        if (person->state != State::Susceptible) continue;
+
+        // Проверяем всех его знакомых
+        bool allNeighborsInfected = true;
+
+        // Если нет знакомых - условие не выполняется
+        if (person->contacts.empty())
+        {
+            continue;
+        }
+
+        for (int contactId : person->contacts)
+        {
+            Person* contact = m_simulation.getPerson(contactId);
+            // Если знакомый здоров или выздоровел - условие нарушено
+            if (contact->state == State::Susceptible || contact->state == State::Recovered)
+            {
+                allNeighborsInfected = false;
+                break;
+            }
+        }
+
+        if (allNeighborsInfected)
+        {
+            result.push_back(person->id);
+        }
+    }
+
+    qDebug() << "Never infected with all neighbors infected found:" << result.size();
+    return result;
+}
+
