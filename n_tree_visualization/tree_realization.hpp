@@ -24,11 +24,15 @@ struct Node {
 class MTreeModel : public QObject {
     Q_OBJECT
     Q_PROPERTY(QPointF currentPosition READ currentPosition NOTIFY positionChanged)
-    Q_PROPERTY(int treeHeight READ treeHeight NOTIFY treeChanged) 
-    Q_PROPERTY(int mValue READ mValue NOTIFY treeChanged) 
+    Q_PROPERTY(int treeHeight READ treeHeight NOTIFY treeChanged)
+    Q_PROPERTY(int mValue READ mValue NOTIFY treeChanged)
     Q_PROPERTY(QString currentNodeInfo READ currentNodeInfo NOTIFY currentNodeChanged)
     Q_PROPERTY(double stopProbability READ stopProbability NOTIFY stopProbabilityChanged)
     Q_PROPERTY(QString distributionType READ distributionType NOTIFY distributionChanged)
+    Q_PROPERTY(bool isStopped READ isStopped NOTIFY stoppedChanged)
+    Q_PROPERTY(int targetNodeId READ targetNodeId WRITE setTargetNodeId NOTIFY targetChanged)
+    Q_PROPERTY(double targetProbability READ targetProbability NOTIFY targetProbabilityCalculated)
+    Q_PROPERTY(QString targetInfo READ targetInfo NOTIFY targetChanged)
 
 public:
     explicit MTreeModel(QObject *parent = nullptr);
@@ -40,14 +44,17 @@ public:
     };
     Q_ENUM(Distribution)
 
-   
+
     QPointF currentPosition() const { return m_currentPosition; }
     int treeHeight() const { return m_height; }
     int mValue() const { return m_m; }
     QString currentNodeInfo() const;
     double stopProbability() const { return m_stopProb; }
     QString distributionType() const;
-
+    bool isStopped() const { return m_isStopped; }
+    int targetNodeId() const { return m_targetNodeId; }
+    double targetProbability() const { return m_targetProbability; }
+    QString targetInfo() const;
 
     Q_INVOKABLE void setDistribution(int dist);
     Q_INVOKABLE void setStopProbability(double prob);
@@ -58,14 +65,23 @@ public:
     Q_INVOKABLE int nodeCount() const { return m_nodes.size(); }
     Q_INVOKABLE bool isLeaf(int nodeId) const;
     Q_INVOKABLE int getCurrentNodeId() const { return m_currentNodeId; }
+    Q_INVOKABLE double getNodeStopProbability(int nodeId) const;
+    Q_INVOKABLE void setTargetNodeId(int nodeId);
+    Q_INVOKABLE void calculatePathProbability();
+    Q_INVOKABLE QVector<int> getPathToNode(int nodeId) const;
+    Q_INVOKABLE QString formatPath(const QVector<int>& path) const;
 
 signals:
     void positionChanged();
     void currentNodeChanged();
     void stopProbabilityChanged();
     void distributionChanged();
-    void treeChanged(); 
-    void treeRebuilt(); 
+    void treeChanged();
+    void treeRebuilt();
+    void stoppedChanged();
+    void movementBlocked();
+    void targetChanged();
+    void targetProbabilityCalculated();
 
 private:
     void buildTree();
@@ -73,17 +89,23 @@ private:
     void updatePosition();
     void calculateProbabilities(int childCount);
     void updateNodeProbabilities();
+    void generateRandomStopProbabilities();
+    double calculatePathProbability(const QVector<int>& path);
 
-    int m_m;              
-    int m_height;            
-    int m_currentNodeId;       
-    double m_stopProb;         
+    int m_m;
+    int m_height;
+    int m_currentNodeId;
+    double m_stopProb;
+    bool m_isStopped;
 
-    QVector<Node> m_nodes;       
+    int m_targetNodeId;
+    double m_targetProbability;
+
+    QVector<Node> m_nodes;
     Distribution m_currentDistribution;
-    QVector<double> m_currentProbs; 
-    QVector<QPointF> m_nodePositions; 
-    QPointF m_currentPosition; 
+    QVector<double> m_currentProbs;
+    QVector<QPointF> m_nodePositions;
+    QPointF m_currentPosition;
 };
 
 #endif // TREE_REALIZATION_HPP
