@@ -19,29 +19,24 @@ Canvas {
         var curr_pos_x = currentPos * segment_size
 
         // PIT
-        // PIT - исправленная версия
         ctx.save()
 
-        // Яма должна быть слева от roadStart
-        var pitWidth = roadStart - 20  // чуть меньше roadStart
-        var pitCenterX = pitWidth / 2  // центр ямы
+        var pitWidth = roadStart - 20
+        var pitCenterX = pitWidth / 2
 
-        // Рисуем овальную яму
         ctx.beginPath()
-        ctx.ellipse(pitCenterX-10, centerY-25, pitWidth + 10, pit_height/1.5)
+        ctx.ellipse(0, centerY-25, pitWidth + 20, pit_height)
         ctx.fillStyle = "#2C1E0E"
         ctx.fill()
 
-        // Обводка ямы
         ctx.strokeStyle = "#8B4513"
         ctx.lineWidth = 3
         ctx.stroke()
 
-        // Шипы на дне ямы (слева)
         ctx.fillStyle = "#A0522D"
         for (var i = 0; i < 11; i++) {
             var spikeX = 10 + i * (pitWidth - 20) / 4
-            var spikeY = centerY + 25
+            var spikeY = centerY + 60
 
             ctx.beginPath()
             ctx.moveTo(spikeX, spikeY)
@@ -52,12 +47,11 @@ Canvas {
         }
 
 
-        // Надпись "ПРОПАСТЬ"
         ctx.fillStyle = "#FF4500"
         ctx.font = "bold 14px 'Courier New'"
         ctx.shadowColor = "red"
         ctx.shadowBlur = 5
-        ctx.fillText("⚠ПРОПАСТЬ⚠", 0, centerY - 30)
+        ctx.fillText("⚠CLIFF⚠", 0, centerY - 30)
 
         ctx.shadowBlur = 0
         ctx.restore()
@@ -130,7 +124,6 @@ Canvas {
 
         }
 
-    property bool isMoving: false
 
     NumberAnimation {
         id: walkAnimation
@@ -150,18 +143,88 @@ Canvas {
         x: (simulation ? simulation.current_pos * 50 - 12 : 50)
 
         y: canvas.height/2 - 35
-
-        SequentialAnimation on y {
-            running: canvas.isMoving
-            loops: Animation.Infinite
-            NumberAnimation { to: root.height/2 - 40; duration: 150; easing.type: Easing.InOutSine }
-            NumberAnimation { to: root.height/2 - 35; duration: 150; easing.type: Easing.InOutSine }
-        }
-
-        rotation: canvas.isMoving ? Math.sin(Date.now() / 200) * 5 : 0
-
         Behavior on x {
             NumberAnimation { duration: 150; easing.type: Easing.InOutQuad }
         }
-    }
+        Connections {
+            target: simulation
+            function onResetPressed() {
+                pubEmoji.y = canvas.height/2 - 35
+
+            }
+        }
+        property bool isFalling: false
+        onXChanged: {
+                if (simulation && simulation.current_pos === 0) {
+                    isFalling = true
+                    fallAnimation.start()
+                }
+            }
+
+            ParallelAnimation {
+                id: fallAnimation
+                running: isFalling
+
+                NumberAnimation {
+                    target: pubEmoji
+                    property: "x"
+                    to: 12
+                    duration: 500
+                    easing.type: Easing.InQuad
+                }
+
+                NumberAnimation {
+                       target: pubEmoji
+                       property: "y"
+                       to: canvas.height/2 + 40
+                       duration: 800
+                       easing.type: Easing.InQuad
+                   }
+
+
+
+                NumberAnimation {
+                    target: pubEmoji
+                    property: "rotation"
+                    to: 720
+                    duration: 800
+                    easing.type: Easing.InQuad
+                }
+
+
+
+                onStopped: {
+                    fallEffect.visible = true
+                    fallEffect.opacity = 1
+                }
+
+            }
+
+            Text {
+                id: fallEffect
+                text: "💀"
+                font.pixelSize: 60
+                anchors.centerIn: parent
+                opacity: 0
+                visible: false
+
+                SequentialAnimation {
+                    id: effectAnimation
+                    running: fallEffect.visible
+                    NumberAnimation { target: fallEffect; property: "scale"; to: 1.5; duration: 200 }
+                    NumberAnimation { target: fallEffect; property: "scale"; to: 1.0; duration: 200 }
+                    NumberAnimation { target: fallEffect; property: "opacity"; to: 0; duration: 500 }
+                    ScriptAction { script: fallEffect.visible = false }
+                }
+            }
+
+            rotation: canvas.isMoving && !isFalling ? Math.sin(Date.now() / 200) * 5 : 0
+
+            Behavior on x {
+                NumberAnimation { duration: 500; easing.type: Easing.InOutQuad }
+            }
+        }
+
+
+
 }

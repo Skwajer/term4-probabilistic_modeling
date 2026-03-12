@@ -20,7 +20,7 @@ Item {
     Connections {
         target: simulation
         function onStatsChanged() {
-            console.log("STATS CHANGED! Данные обновлены")
+            console.log("STATS CHANGED!")
             canvas.requestPaint()
         }
     }

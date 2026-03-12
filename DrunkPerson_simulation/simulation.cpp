@@ -16,7 +16,6 @@ void Simulation::run()
         {
             break;
         }
-        std::this_thread::sleep_for(m_step_duration * std::chrono::milliseconds());
         m_current_pos += (m_real_dist(m_rng) < m_q) ? -1 : 1;
     }
 }

@@ -4,7 +4,7 @@
 
 simulationAdapter::simulationAdapter(QObject *parent)
     : QObject(parent)
-    , m_simulation(4, 400, 20)  // step_duration=500ms, max_steps=
+    , m_simulation(4, 400, 20)  // step_duration=400ms, max_steps=
     , m_running(false)
 {
     emit step_durationChanged();
@@ -22,7 +22,6 @@ void simulationAdapter::runSimulation()
     if (m_running) return;
     printf("%d\n", m_simulation.get_current_pos());
 
-    m_simulation.run();
     if (m_simulation.get_current_pos() == 0)
     {
         resetSimulation();
@@ -60,6 +59,7 @@ void simulationAdapter::resetSimulation()
     emit qChanged();
     emit pChanged();
     emit current_posChanged();
+    emit resetPressed();
 }
 
 void simulationAdapter::onTimerTimeout()
@@ -95,12 +95,13 @@ void simulationAdapter::step()
 void simulationAdapter::runStatistics(int numTrials)
 {
     qDebug() << "\n=== runStatistics START ===";
-    Simulation sim_for_stats(4, 2000, 20);
+    Simulation sim_for_stats(4, 2000, 50);
 
     m_fallProbabilities.clear();
     m_pubProbabilities.clear();
     m_bValues.clear();
-
+    sim_for_stats.set_p(m_simulation.get_p());
+    sim_for_stats.set_q(m_simulation.get_q());
     int maxB = sim_for_stats.get_max_steps_forward();
     qDebug() << "maxB =" << maxB;
 

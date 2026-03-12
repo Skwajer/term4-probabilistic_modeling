@@ -89,6 +89,7 @@ signals:
     void runningChanged();
     void timeleftChanged();
     void statsChanged();
+    void resetPressed();
 
 
 public slots:
