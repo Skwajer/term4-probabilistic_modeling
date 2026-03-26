@@ -1,0 +1,2 @@
+set(__QT_DEPLOY_TARGET_return_to_zero_FILE /home/skwajer/dev/term4-probabilistic_modeling/2DParticleMotion/build/return_to_zero)
+set(__QT_DEPLOY_TARGET_return_to_zero_TYPE EXECUTABLE)

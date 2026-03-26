@@ -141,10 +141,8 @@ QVector<int> simulationAdapter::findRecoveredWithUnrecoveredNeighbors()
     {
         Person* person = m_simulation.getPerson(i);
 
-        // Проверяем, что человек выздоровел
         if (person->state != State::Recovered) continue;
 
-        // Проверяем всех его знакомых
         bool hasUnrecoveredNeighbor = false;
         for (int contactId : person->contacts)
         {
@@ -174,13 +172,10 @@ QVector<int> simulationAdapter::findNeverInfectedWithAllNeighborsInfected()
     {
         Person* person = m_simulation.getPerson(i);
 
-        // Проверяем, что человек никогда не болел (все еще здоров)
         if (person->state != State::Susceptible) continue;
 
-        // Проверяем всех его знакомых
         bool allNeighborsInfected = true;
 
-        // Если нет знакомых - условие не выполняется
         if (person->contacts.empty())
         {
             continue;
@@ -189,7 +184,6 @@ QVector<int> simulationAdapter::findNeverInfectedWithAllNeighborsInfected()
         for (int contactId : person->contacts)
         {
             Person* contact = m_simulation.getPerson(contactId);
-            // Если знакомый здоров или выздоровел - условие нарушено
             if (contact->state == State::Susceptible || contact->state == State::Recovered)
             {
                 allNeighborsInfected = false;

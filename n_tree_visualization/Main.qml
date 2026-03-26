@@ -299,8 +299,8 @@ ApplicationWindow {
                                 Label { text: "M (кол-во детей):" }
                                 SpinBox {
                                     id: mSpin
-                                    from: 2
-                                    to: 5
+                                    from: 1
+                                    to: 100
                                     value: 2
                                     editable: true
                                 }
@@ -310,8 +310,8 @@ ApplicationWindow {
                                 Label { text: "Высота дерева:" }
                                 SpinBox {
                                     id: heightSpin
-                                    from: 2
-                                    to: 5
+                                    from: 0
+                                    to: 100
                                     value: 3
                                     editable: true
                                 }
